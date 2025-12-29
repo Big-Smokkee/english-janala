@@ -2,7 +2,7 @@ const loadLessons = () => {
     const url = "https://openapi.programming-hero.com/api/levels/all";
     fetch(url).then(res => res.json()).then(json => displayLessons(json.data));
 }
-const removeActive = ()=>{
+const removeActive = () => {
     const lessonButtons = document.querySelectorAll(".lesson-btn");
     // console.log(lessonButtons);
     lessonButtons.forEach(btn => btn.classList.remove("active"));
@@ -61,7 +61,7 @@ const displayLevelWord = (words) => {
             <p class="font-semibold">Meaning/Pronounciation</p>
             <div class="font-bangla text-2xl font-semibold">"${word.meaning ? word.meaning : "শব্দের অর্থ খুঁজে পাওয়া যায়নি"} / ${word.pronunciation ? word.pronunciation : "শব্দের উচ্চারণ পাওয়া যায়নি"}"</div>
             <div class="flex justify-between items-center">
-                <button onclick="my_modal_5.showModal()" class="btn bg-[#1A91FF1A] hover:bg-[#1A91FF80]"><span><i class="fa-solid fa-circle-info"></i></span></button>
+                <button onclick="loadWordDetail(${word.id})" class="btn bg-[#1A91FF1A] hover:bg-[#1A91FF80]"><span><i class="fa-solid fa-circle-info"></i></span></button>
                 <button class="btn bg-[#1A91FF1A] hover:bg-[#1A91FF80]"><span><i class="fa-solid fa-volume-high"></i></span></button>
             </div>
         </div>
@@ -69,4 +69,82 @@ const displayLevelWord = (words) => {
         wordContainer.append(card);
     })
 }
+const loadWordDetail = async (id) => {
+    const url = `https://openapi.programming-hero.com/api/word/${id}`;
+    // console.log(url);
+    const response = await fetch(url);
+    const details = await response.json();
+    dispayWordDetails(details.data);
+}
+const createElements = (arr) =>{
+    const htmlElements = arr.map((el) => `<button class="btn bg-[#1A91FF1A] hover:bg-[#1A91FF80]"><span>${el}</span></button>`);
+    return(htmlElements.join(" "));
+    
+}
+const dispayWordDetails = (details) => {
+    const detailsContainer = document.getElementById("details-container");
+    console.log(details);
+    //     id
+    // : 
+    // 3
+    // level
+    // : 
+    // 2
+    // meaning
+    // : 
+    // "সতর্ক"
+    // partsOfSpeech
+    // : 
+    // "adjective"
+    // points
+    // : 
+    // 2
+    // pronunciation
+    // : 
+    // "কশাস"
+    // sentence
+    // : 
+    // "Be cautious while crossing the road."
+    // synonyms
+    // : 
+    // (3) ['careful', 'alert', 'watchful']
+    // word
+    // : 
+    // "Cautious"
+    // [[Prototype]]
+    // : 
+    // Object
+
+    detailsContainer.innerHTML = `
+    <div class="space-y-6">
+                    <h2 class="text-2xl font-bold">${details.word} (<span><i class="fa-solid fa-microphone"></i></span> ${details.meaning})</h2>
+                    <div>
+                        <h4 class="font-semibold">Meaning</h4>
+                        <p class="font-bangla font-medium">${details.meaning}</p>
+                    </div>
+
+                    <div>
+                        <p>Example</p>
+                        <p class="text-gray-400">
+                            ${details.sentence}
+                        </p>
+                    </div>
+                    <div>
+                        <p>সমার্থক শব্দ গুলো</p>
+                        <div>
+                            ${createElements(details.synonyms)}
+                        </div>
+                    </div>
+                    <div class="modal-action justify-start">
+                        <form method="dialog">
+                            <!-- if there is a button in form, it will close the modal -->
+                            <button class="btn btn-primary bg-purple-600 text-white py-[6px] px-[36px] rounded hover:bg-purple-700">Complete Learning</button>
+                        </form>
+                    </div>
+                </div>
+    `;
+    document.getElementById("word_modal").showModal();
+}
+// https://openapi.programming-hero.com/api/words/all
+
 loadLessons();
